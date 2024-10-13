@@ -352,7 +352,13 @@ def eval_genomes(genomes, config):
         birds.append(Bird(230,350))
         ge.append(genome)
         
-
+    local_dir = os.path.dirname(__file__)
+    if os.path.exists(local_dir + '/best_net.pickle') and os.path.exists(local_dir + '/best_genome.pickle'):
+        with open("best_net.pickle", "rb") as f: #19 dit laad de netwerk van "best_net.pickle"
+            nets = [pickle.load(f)] # overwrite de vorige lijst van nets (line 345)
+        with open("best_genome.pickle", "rb") as f: #it laad de genome van "best_genome.pickle"
+            ge = [pickle.load(f)[1]] # overwrite de vorige lijst van genomes (line 346)
+        birds = [birds[0]] 
     base = Base(FLOOR)
     pipes = [Pipe(700)]
     score = 0
@@ -372,8 +378,8 @@ def eval_genomes(genomes, config):
 
         pipe_ind = 0
         if len(birds) > 0:
-            if len(pipes) > 1 and birds[0].x > pipes[0].x + pipes[0].PIPE_TOP.get_width():  # determine whether to use the first or second
-                pipe_ind = 1                                                                 # pipe on the screen for neural network input
+            if len(pipes) > 1 and birds[0].x > pipes[0].x + pipes[0].PIPE_TOP.get_width():  #18 bepaald of de eerste, of tweede pijp locatie wordt gestuurd naar de netwerken.
+                pipe_ind = 1                                                                 
 
         for x, bird in enumerate(birds):  #13 geef elke vogel +0.1 fitness voor elke frame ze levend zijn
             ge[x].fitness += 0.1
@@ -381,7 +387,7 @@ def eval_genomes(genomes, config):
 
             #16 de locatie van de vogel, de locatie van de bovenste pijp en de locatie van de onderste pijp verzenden en via het netwerk bepalen of ze moeten springen.
             output = nets[birds.index(bird)].activate((bird.y, abs(bird.y - pipes[pipe_ind].height), abs(bird.y - pipes[pipe_ind].bottom)))
-#             
+             
             if output[0] > 0.5:  #17 we maken gebruik van de Tanh functie om te bepalen of ze springen, dus waarde moet tussen 0-1 zijn.
                 bird.jump()
 
