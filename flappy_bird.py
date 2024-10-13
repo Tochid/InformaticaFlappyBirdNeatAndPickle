@@ -381,3 +381,39 @@ def main(win):
     end_screen(WIN)
 
 main(WIN)
+
+def run(config_file):
+    """
+Deze functie is wat daadwerkelijk de NEAT algorithm runt, om de neural netwerk te laten trainen.
+
+"""
+    #2 Defineert alle "subheadings" van 'config-feedforward.txt'
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                         config_file)
+
+    #3 Zet p als de populatie volgens de 'config-feedforward.txt'.
+    p = neat.Population(config)
+
+    #4 Dit produceert een report met informatie over elke generatie in de console, terwijl de programma runt.
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+    
+
+    #5 Defineert de maximale aantal generaties diep de programma mag blijven draaien.
+    # eval_genomes is de "fitness function"
+    winner = p.run(eval_genomes, 50)
+
+    #6 Laat de statistieken zien van de beste genome.
+    print('\nBest genome:\n{!s}'.format(winner))
+
+
+if __name__ == '__main__':
+    #1 Pad naar configuratiebestand bepalen. Deze code is  hier zodat het script toch de 'config-feedforward.txt' kan vinden ook al is de huidige map anders.
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, 'config-feedforward.txt')
+    run(config_path)
+
+pygame.quit()
+
