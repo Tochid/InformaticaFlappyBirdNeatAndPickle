@@ -340,8 +340,8 @@ def eval_genomes(genomes, config):
     """
     Draait de game loop.
     """
-#8 met deze lijsten kunnen we elke vogel in de gaten houden (waar ze zijn, of ze een pijp hebben geraakt etc.)
-# Ook houden we rekening met de genomes (ge) om de "birds" daadwerkelijk een "fitness" te geven.
+#8 met de lijst birds = [] kunnen we elke vogel in de gaten houden (waar ze zijn, of ze een pijp hebben geraakt etc.)
+# Ook kunnen we de genomes en netwerk in de lijsten nets = [] en ge = [] gebruiken om daadwerkelijk een fitness te geven aan elke vogel.
     nets = []
     ge = []
     birds = []
@@ -353,7 +353,7 @@ def eval_genomes(genomes, config):
         ge.append(genome)
         
     local_dir = os.path.dirname(__file__)
-    if os.path.exists(local_dir + '/best_net.pickle') and os.path.exists(local_dir + '/best_genome.pickle'):
+    if os.path.exists(local_dir + '/best_net.pickle') and os.path.exists(local_dir + '/best_genome.pickle'): #activeert deze functie alleen als er beste net en beste genome bestaan.
         with open("best_net.pickle", "rb") as f: #19 dit laad de netwerk van "best_net.pickle"
             nets = [pickle.load(f)] # overwrite de vorige lijst van nets (line 345)
         with open("best_genome.pickle", "rb") as f: #it laad de genome van "best_genome.pickle"
@@ -385,7 +385,7 @@ def eval_genomes(genomes, config):
             ge[x].fitness += 0.1
             bird.move()
 
-            #16 de locatie van de vogel, de locatie van de bovenste pijp en de locatie van de onderste pijp verzenden en via het netwerk bepalen of ze moeten springen.
+            #16 de locatie van de vogel, de locatie van de bovenste pijp en de locatie van de onderste pijp verzenden, en via het netwerk bepalen of ze moeten springen.
             output = nets[birds.index(bird)].activate((bird.y, abs(bird.y - pipes[pipe_ind].height), abs(bird.y - pipes[pipe_ind].bottom)))
              
             if output[0] > 0.5:  #17 we maken gebruik van de Tanh functie om te bepalen of ze springen, dus waarde moet tussen 0-1 zijn.
@@ -401,9 +401,9 @@ def eval_genomes(genomes, config):
             for bird in birds:
                 if pipe.collide(bird, WIN): #10 Dit zorgt ervoor dat de vogels die een pijp aanraken, ook weggehaald worden van het spel, samen met hun genome, en netwerk.
                     ge[birds.index(bird)].fitness -= 1
-                    nets.pop(birds.index(bird))
-                    ge.pop(birds.index(bird))
-                    birds.pop(birds.index(bird))
+                    nets.pop(birds.index(bird)) #nets.pop = verwijderen van nets
+                    ge.pop(birds.index(bird)) #ge.pop = verwijderen van genomes
+                    birds.pop(birds.index(bird)) #birds.pop = verwijderen van birds
 
             if pipe.x + pipe.PIPE_TOP.get_width() < 0:
                 rem.append(pipe)
